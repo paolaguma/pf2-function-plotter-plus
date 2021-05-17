@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Plot.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">FunctionPlotterLab</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Plot.java</span></div><h1>Plot.java</h1><pre class="source lang-java linenums">/**
+ * The Plot is the &quot;model&quot; of this application.
+ * It is an immutable class that
+ * points to the two mutable and observable parts of the &quot;model&quot;:
+ * 1) a Function, and
+ * 2) a Range (along the x-axis, over which the function should be plotted).
+ */
+public final class Plot {
+
+    private final Function function;
+    private final Range range;
+    private final Cursor cursor;
+    
+    
+    /**
+     * Create a new Plot of the given Function, with the given Range and Cursor.
+     * @param function The Function to plot
+     * @param range The Range (on the x-axis) over which to plot
+     * @param cursor The Cursor denoting a point on the x-axis
+     */
+<span class="fc" id="L21">    public Plot(final Function function, final Range range, final Cursor cursor) {</span>
+<span class="fc" id="L22">        this.function = function;</span>
+<span class="fc" id="L23">        this.range = range;</span>
+<span class="fc" id="L24">        this.cursor = cursor;</span>
+<span class="fc" id="L25">    }</span>
+    
+    /**
+     * Get the Function of this Plot.
+     * @return this Plot's Function
+     */
+    public final Function getFunction() {
+<span class="fc" id="L32">        return function;</span>
+    }
+    
+    /**
+     * Get the Range of this Plot.
+     * @return this Plot's Range
+     */
+    public final Range getRange() {
+<span class="fc" id="L40">        return range;</span>
+    }
+    
+    /**
+     * Get the Cursor of this Plot.
+     * @return this Plot's Cursor
+     */
+    public final Cursor getCursor() {
+<span class="fc" id="L48">        return cursor;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PlotCanvas.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">FunctionPlotterLab</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">PlotCanvas.java</span></div><h1>PlotCanvas.java</h1><pre class="source lang-java linenums">import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+
+/**
+ * The PlotCanvas is part of the GUI.
+ * It is a custom component, which draws itself
+ * (in the paintComponent method)
+ * and which provides information on how big it would like to be
+ * (via the getPreferredSize method).
+ */
+public final class PlotCanvas extends Canvas {
+
+<span class="nc" id="L19">    private static final Dimension PREFERRED_SIZE = new Dimension(400, 300);</span>
+    
+    private final Cursor cursor;
+    
+    
+    /**
+     * Create a PlotCanvas for the given Plot.
+     * @param plot The Plot to show
+     */
+    public PlotCanvas(final Plot plot) {
+<span class="nc" id="L29">        super(plot);</span>
+<span class="nc" id="L30">        this.cursor = plot.getCursor();</span>
+        
+        // register listeners        
+<span class="nc" id="L33">        cursor.addCursorListener(new CursorListener() {</span>
+            public void cursorChanged(final Cursor cursor) {
+<span class="nc" id="L35">                repaint();</span>
+<span class="nc" id="L36">            }</span>
+        });
+<span class="nc" id="L38">        addMouseListener(new MouseAdapter() {</span>
+            public void mousePressed(final MouseEvent ev) {
+<span class="nc" id="L40">                cursor.setX(xViewToModel(ev.getX()));</span>
+<span class="nc" id="L41">            }</span>
+        });
+<span class="nc" id="L43">        addMouseMotionListener(new MouseMotionAdapter() {</span>
+            public void mouseDragged(final MouseEvent ev) {
+<span class="nc" id="L45">                cursor.setX(xViewToModel(ev.getX()));</span>
+<span class="nc" id="L46">            }</span>
+        });
+<span class="nc" id="L48">    }</span>
+    
+    @Override
+    public Dimension getPreferredSize() {
+<span class="nc" id="L52">        return PREFERRED_SIZE;</span>
+    }
+    
+    @Override
+    public void paintComponent(final Graphics g) {
+        // fill the background with white
+<span class="nc" id="L58">        g.setColor(Color.WHITE);</span>
+<span class="nc" id="L59">        g.fillRect(0, 0, getWidth(), getHeight());</span>
+        
+        // find min and max model y
+<span class="nc" id="L62">        final double minModelY = range.getMin();</span>
+<span class="nc" id="L63">        final double maxModelY = range.getMax();</span>
+
+<span class="nc" id="L65">        drawAxes(g, minModelY, maxModelY);</span>
+
+        // plot curve
+<span class="nc" id="L68">        drawFunction(g, minModelY, maxModelY);</span>
+        
+        // draw x and y cursor
+<span class="nc" id="L71">        drawCursors(g, minModelY, maxModelY);</span>
+<span class="nc" id="L72">    }   </span>
+
+    private void drawFunction(final Graphics g, final double minModelY, final double maxModelY) {
+<span class="nc" id="L75">        g.setColor(Color.BLUE);</span>
+        //iterate through vx(viewX) -&gt; xViewtoModel
+        // calculate yModel using function.f(x);
+        // plot y to view yModeltoView
+<span class="nc" id="L79">        final Graphics2D g2d = (Graphics2D)g;</span>
+<span class="nc" id="L80">        int prevX = 0;</span>
+<span class="nc" id="L81">        int prevY = 0;</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        for (int vx = 0; vx &lt; getWidth(); vx++) {</span>
+            
+<span class="nc" id="L84">            final double xModel = xViewToModel(vx);</span>
+<span class="nc" id="L85">            final double yModel = function.compute(xModel);</span>
+<span class="nc" id="L86">            final int vy = yModelToView(yModel, minModelY, maxModelY);</span>
+            
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            if (vx == 0) {</span>
+<span class="nc" id="L89">                prevX = vx;</span>
+<span class="nc" id="L90">                prevY = vy;</span>
+            }
+<span class="nc" id="L92">            g2d.setRenderingHint(</span>
+                RenderingHints.KEY_ANTIALIASING, 
+                RenderingHints.VALUE_ANTIALIAS_ON);
+<span class="nc" id="L95">            g2d.drawLine(prevX, prevY, vx, vy);</span>
+
+<span class="nc" id="L97">            prevX = vx;</span>
+<span class="nc" id="L98">            prevY = vy;</span>
+        }
+<span class="nc" id="L100">    }</span>
+
+    private void drawAxes(final Graphics g, final double minModelY, final double maxModelY) {
+        // plot x axis (at y=0)
+<span class="nc" id="L104">        g.setColor(Color.GRAY);</span>
+<span class="nc" id="L105">        final int viewY0 = yModelToView(0, minModelY, maxModelY);</span>
+<span class="nc" id="L106">        g.drawLine(0, viewY0, getWidth(), viewY0);</span>
+        
+        // plot y axis (x = 0)
+<span class="nc" id="L109">        final int viewX0 = xModelToView(0);</span>
+<span class="nc" id="L110">        g.drawLine(viewX0, 0, viewX0, getHeight());</span>
+<span class="nc" id="L111">    }</span>
+
+    private void drawCursors(final Graphics g, final double minModelY, final double maxModelY) {
+<span class="nc" id="L114">        g.setColor(Color.BLACK);</span>
+<span class="nc" id="L115">        final int cursorViewX = xModelToView(cursor.getX());</span>
+<span class="nc" id="L116">        g.drawLine(cursorViewX, 0, cursorViewX, getHeight());</span>
+<span class="nc" id="L117">        g.drawString(&quot;x = &quot; + cursor.getX(), cursorViewX + 4, getHeight() - 20);</span>
+        // draw y cursor
+<span class="nc" id="L119">        final double cursorModelY = function.compute(cursor.getX());</span>
+<span class="nc" id="L120">        final int cursorViewY = yModelToView(cursorModelY, minModelY, maxModelY);</span>
+<span class="nc" id="L121">        g.drawLine(0, cursorViewY, getWidth(), cursorViewY);</span>
+<span class="nc" id="L122">        g.drawString(&quot;y = &quot; + cursorModelY, cursorViewX + 4, getHeight() - 4);</span>
+<span class="nc" id="L123">    }</span>
+    
+    private double xViewToModel(final int vx) {
+<span class="nc" id="L126">        return ((double)vx) / getWidth() * range.getExtent() + range.getMin();</span>
+    }
+    
+    private int xModelToView(final double x) {
+<span class="nc" id="L130">        return (int)((x - range.getMin()) / range.getExtent() * getWidth());</span>
+
+    }
+    
+    private int yModelToView(final double y, final double minY, final double maxY) {
+<span class="nc" id="L135">        return (int)(getHeight() - 1 - (y - minY) / (maxY - minY) * getHeight());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

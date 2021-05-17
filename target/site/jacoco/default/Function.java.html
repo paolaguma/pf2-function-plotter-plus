@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Function.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">FunctionPlotterLab</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Function.java</span></div><h1>Function.java</h1><pre class="source lang-java linenums">import java.util.ArrayList;
+
+
+/**
+ * The Function is the most important part of the &quot;model&quot; 
+ * in our function plotter application.
+ * The &quot;model&quot; does not know anything about the &quot;GUI&quot;.
+ * It could exist without &quot;GUI&quot; (e.g., for a command-line interface).
+ */
+public final class Function {
+
+    private final ArrayList&lt;FunctionListener&gt; listeners;
+    private String expressionText;
+    private Program program;
+    
+    /**
+     * Create a Function based on the given expression.
+     * @param expressionText The expression (a function of x).
+     */
+<span class="fc" id="L20">    public Function(final String expressionText) {</span>
+<span class="fc" id="L21">        listeners = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L22">        setExpression(expressionText);</span>
+<span class="fc" id="L23">    }</span>
+    
+    /**
+     * Change the expression underlying this Function.
+     * @param expressionText The new expression (a function of x).
+     */
+    public final void setExpression(final String expressionText) {
+<span class="fc" id="L30">        this.expressionText = expressionText;</span>
+<span class="fc" id="L31">        final Parser parser = new ArithParser();</span>
+<span class="fc" id="L32">        final Node parsedExpression = parser.parse(expressionText);</span>
+<span class="fc" id="L33">        program = new Program();</span>
+<span class="fc" id="L34">        parsedExpression.compile(program);</span>
+<span class="fc" id="L35">        fireFunctionChanged();</span>
+<span class="fc" id="L36">    }</span>
+    
+    /**
+     * Get the expression defining this function.
+     * @return the expression.
+     */
+    public final String getExpression() {
+<span class="fc" id="L43">        return expressionText;</span>
+    }
+    
+    /**
+     * Evaluate the function at the given x.
+     * @param x The value in which to evaluate the function.
+     * @return the value of the function in the given x.
+     */
+    public final double compute(final double x) {
+<span class="fc" id="L52">        final VariableTable variableTable = new VariableTable();</span>
+        //TODO: if your language supports doubles, remove this cast
+<span class="fc" id="L54">        final int value = (int)x;</span>
+<span class="fc" id="L55">        variableTable.set(&quot;x&quot;, value);</span>
+<span class="fc" id="L56">        return program.execute(variableTable);</span>
+    }
+    
+    //--- listener management
+
+    /**
+     * Adds a new function listener.
+     * @param li a Function Listener
+     */
+    public void addFunctionListener(final FunctionListener li) {
+<span class="fc" id="L66">        listeners.add(li);</span>
+<span class="fc" id="L67">    }</span>
+
+    /**
+     * Removes a function listener.
+     * @param li a Function Listener
+     */
+    public void removeFunctionListener(final FunctionListener li) {
+<span class="fc" id="L74">        listeners.remove(li);</span>
+<span class="fc" id="L75">    }</span>
+    
+    private void fireFunctionChanged() {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        for (final FunctionListener fi : listeners) {</span>
+<span class="fc" id="L79">            fi.functionChanged(this);</span>
+<span class="fc" id="L80">        }</span>
+<span class="fc" id="L81">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
