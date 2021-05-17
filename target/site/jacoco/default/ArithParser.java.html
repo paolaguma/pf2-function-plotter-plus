@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArithParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">FunctionPlotterLab</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">ArithParser.java</span></div><h1>ArithParser.java</h1><pre class="source lang-java linenums">/**
+ * A Parser for our Arith language
+ * (a simple language of arithmetic expressions).
+ *
+ * &lt;code&gt;
+ * EXPRESSION   ::= [ &quot;+&quot; | &quot;-&quot; ] TERM { ( &quot;+&quot; | &quot;-&quot; ) TERM }
+ * TERM         ::= FACTOR { ( &quot;*&quot; | &quot;/&quot; ) FACTOR }
+ * FACTOR       ::= Literal |
+ *                  Identifier|
+ *                  &quot;(&quot; EXPRESSION &quot;)&quot;
+ * &lt;/code&gt;
+ */
+<span class="fc" id="L13">public final class ArithParser implements Parser {</span>
+
+    private LexicalAnalyzer lexer;
+
+
+    /**
+     * Parse a program in the Arith language.
+     * @param sourceCode The source code of the program in the Arith language
+     * @return an AST of the program
+     */
+    @Override
+    public Node parse(final String sourceCode) {
+<span class="fc" id="L25">        this.lexer = new LexicalAnalyzer(sourceCode);</span>
+        // fetch first token
+<span class="fc" id="L27">        lexer.fetchNextToken();</span>
+        // now parse the EXPRESSION
+<span class="fc" id="L29">        return parseExpression();</span>
+    }
+    /*
+    public static void main(String[] args) {
+        OperandStack op = new OperandStack();
+        VariableTable vt = new VariableTable();
+        Storage st = new Storage(op,vt);
+        Program pr = new Program();
+        Parser p = new ArithParser();
+        Node res = p.parse(&quot;-(-(2+3)+7*7*9)&quot;);
+        System.out.println(res.toString());
+        res.compile(pr);
+        int a = pr.execute();
+        System.out.println(a);
+    }
+    */
+
+    /**
+     * Parse an expression.
+     * This assumes the lexer already points to the first token of this expression.
+     *
+     * &lt;p&gt;EBNF:
+     * &lt;code&gt;
+     * EXPRESSION ::= [ &quot;+&quot; | &quot;-&quot; ] TERM { ( &quot;+&quot; | &quot;-&quot; ) TERM }
+     * &lt;/code&gt;
+     *
+     * @return a Node representing the expression
+     */
+    private Node parseExpression() {
+        // parses an expression to an AST
+<span class="fc" id="L59">        boolean negated = false;</span>
+        boolean isAdd;
+
+        //checking the optional [+ | -]
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (lexer.getCurrentToken().getType() == TokenType.MINUS) {</span>
+<span class="fc" id="L64">            negated = true;</span>
+<span class="fc" id="L65">            lexer.fetchNextToken();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        } else if (lexer.getCurrentToken().getType() == TokenType.PLUS) {</span>
+<span class="fc" id="L67">            lexer.fetchNextToken();</span>
+        }
+
+<span class="fc" id="L70">        Node left = parseTerm();</span>
+        // negating if expression has a preceding -.
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (negated) {</span>
+<span class="fc" id="L73">            left = new Negation(left);</span>
+        }
+
+        // parsing for n number of terms
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        while (lexer.getCurrentToken().getType() != TokenType.END_OF_FILE) {</span>
+
+            //checking for + or - opcodes.
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            if (lexer.getCurrentToken().getType() == TokenType.PLUS) {</span>
+<span class="fc" id="L81">                isAdd = true;</span>
+<span class="fc" id="L82">                lexer.fetchNextToken();</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">            } else if (lexer.getCurrentToken().getType() == TokenType.MINUS) {</span>
+<span class="fc" id="L84">                isAdd = false;</span>
+<span class="fc" id="L85">                lexer.fetchNextToken();</span>
+            } else {
+                break;
+            }
+
+            //parsing right node.
+<span class="fc" id="L91">            final Node right = parseTerm();</span>
+
+<span class="fc bfc" id="L93" title="All 2 branches covered.">            if (isAdd) {</span>
+<span class="fc" id="L94">                left = new Addition(left, right);</span>
+            } else {
+<span class="fc" id="L96">                left = new Subtraction(left, right);</span>
+            }
+
+<span class="fc" id="L99">        }</span>
+<span class="fc" id="L100">        return left;</span>
+    }
+
+    /**
+     * Parse a term.
+     * This assumes the lexer already points to the first token of this term.
+     *
+     * &lt;p&gt;EBNF:
+     * &lt;code&gt;
+     * TERM ::= FACTOR { ( &quot;*&quot; | &quot;/&quot; ) FACTOR }
+     * &lt;/code&gt;
+     *
+     * @return a Node representing the term
+     */
+    private Node parseTerm() {
+<span class="fc" id="L115">        Node left = parseFactor();</span>
+
+<span class="fc" id="L117">        lexer.fetchNextToken();</span>
+        boolean isMul;
+
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        while (lexer.getCurrentToken().getType() != TokenType.END_OF_FILE) {</span>
+
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            if (lexer.getCurrentToken().getType() == TokenType.STAR) {</span>
+<span class="fc" id="L123">                isMul = true;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">            }  else if (lexer.getCurrentToken().getType() == TokenType.SLASH) {</span>
+<span class="fc" id="L125">                isMul = false;</span>
+            }  else {
+                break;
+            }
+<span class="fc" id="L129">            lexer.fetchNextToken();</span>
+
+<span class="fc" id="L131">            final Node right = parseFactor();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            if (isMul) {</span>
+<span class="fc" id="L133">                left = new Multiplication(left, right);</span>
+            } else {
+<span class="fc" id="L135">                left = new Division(left, right);</span>
+            }
+
+<span class="fc" id="L138">            lexer.fetchNextToken();</span>
+
+<span class="fc" id="L140">        }</span>
+<span class="fc" id="L141">        return left;</span>
+    }
+
+    /**
+     * Parse a factor.
+     * This assumes the lexer already points to the first token of this factor.
+     *
+     * &lt;p&gt;EBNF:
+     * &lt;code&gt;
+     * FACTOR ::=
+     *          Literal |
+     *          Identifier |
+     *          &quot;(&quot; EXPRESSION &quot;)&quot;
+     * &lt;/code&gt;
+     *
+     * @return a Node representing the factor
+     */
+    private Node parseFactor() {
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (lexer.getCurrentToken().getType() == TokenType.LITERAL) {</span>
+<span class="fc" id="L160">            return new Literal(Integer.parseInt(lexer.getCurrentToken().getText()));</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        } else if (lexer.getCurrentToken().getType() == TokenType.IDENTIFIER) {</span>
+<span class="fc" id="L162">            return new Variable(lexer.getCurrentToken().getText());</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">        } else if (lexer.getCurrentToken().getType() == TokenType.OPEN_PAREN) {</span>
+<span class="fc" id="L164">            lexer.fetchNextToken();</span>
+<span class="fc" id="L165">            return parseExpression();</span>
+        }
+<span class="nc" id="L167">        return null;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

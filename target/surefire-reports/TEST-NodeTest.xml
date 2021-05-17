@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="16" failures="0" name="NodeTest" time="0.005" errors="0" skipped="0">
+<testsuite tests="16" failures="0" name="NodeTest" time="0.004" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="11.0.10+9-LTS"/>
@@ -65,7 +65,7 @@
   <testcase classname="NodeTest" name="testSubtractionLiteralLiteral" time="0.003"/>
   <testcase classname="NodeTest" name="testAdditionLiteralLiteral" time="0"/>
   <testcase classname="NodeTest" name="testDivisionVariableVariable" time="0"/>
-  <testcase classname="NodeTest" name="testNode" time="0.001"/>
+  <testcase classname="NodeTest" name="testNode" time="0"/>
   <testcase classname="NodeTest" name="testAdditionVariableVariable" time="0"/>
   <testcase classname="NodeTest" name="testMultiplicationLiteralVariable" time="0"/>
   <testcase classname="NodeTest" name="testAdditionLiteralVariable" time="0"/>
@@ -74,8 +74,8 @@
   <testcase classname="NodeTest" name="testDivisionLiteralLiteral" time="0"/>
   <testcase classname="NodeTest" name="testSubtractionVariableVariable" time="0"/>
   <testcase classname="NodeTest" name="testNegation" time="0"/>
-  <testcase classname="NodeTest" name="testSubtractionLiteralVariable" time="0"/>
+  <testcase classname="NodeTest" name="testSubtractionLiteralVariable" time="0.001"/>
   <testcase classname="NodeTest" name="testMultiplicationVariableVariable" time="0"/>
-  <testcase classname="NodeTest" name="testMultiplicationLiteralLiteral" time="0.001"/>
+  <testcase classname="NodeTest" name="testMultiplicationLiteralLiteral" time="0"/>
   <testcase classname="NodeTest" name="testDivisionLiteralVariable" time="0"/>
 </testsuite>
