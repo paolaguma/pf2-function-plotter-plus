@@ -24,8 +24,8 @@ We used the observer pattern for the GUI.
 We use _maven_ for test coverage.
 
 ### Run
-Run the application from the command-line
-<code> javac Main.java <br>
+Run the application from the command-line <br>
+<code> javac Main.java
 java Main </code> <br>
 or you can run with maven
 <code> mvn exec:java -Dexec.mainClass=Main</code>
