@@ -42,11 +42,11 @@ public class ProgramTest {
             "  " + i2.toString() + "\n", 
             p.toString());
     }
-    
+
     @Test
     public void testExecute() {
         Program p = new Program();
         p.append(new BIPUSH(2));
-        assertEquals(2, p.execute());
+        assertEquals(2, p.iExecute());
     }
 }

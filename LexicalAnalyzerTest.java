@@ -13,8 +13,20 @@ public class LexicalAnalyzerTest {
     }
     
     @Test
-    public void testEof() {
+    public void testEof() throws Exception {
+
         final LexicalAnalyzer l = new LexicalAnalyzer("");
+        l.fetchNextToken();
+        Token t = l.getCurrentToken();
+        assertEquals(TokenType.END_OF_FILE, t.getType());
+        assertEquals(0, t.getStartPosition());
+
+    }
+    
+    @Test
+    public void testEofNextEof() throws Exception {
+        final LexicalAnalyzer l = new LexicalAnalyzer("");
+        l.fetchNextToken();
         l.fetchNextToken();
         Token t = l.getCurrentToken();
         assertEquals(TokenType.END_OF_FILE, t.getType());
@@ -22,17 +34,7 @@ public class LexicalAnalyzerTest {
     }
     
     @Test
-    public void testEofNextEof() {
-        final LexicalAnalyzer l = new LexicalAnalyzer("");
-        l.fetchNextToken();
-        l.fetchNextToken();
-        Token t = l.getCurrentToken();
-        assertEquals(TokenType.END_OF_FILE, t.getType());
-        assertEquals(0, t.getStartPosition());
-    }
-    
-    @Test
-    public void testOne() {
+    public void testOne() throws Exception {
         final LexicalAnalyzer l = new LexicalAnalyzer("+");
         l.fetchNextToken();
         Token t0 = l.getCurrentToken();
@@ -45,7 +47,7 @@ public class LexicalAnalyzerTest {
     }
     
     @Test
-    public void testTwo() {
+    public void testTwo() throws Exception {
         final LexicalAnalyzer l = new LexicalAnalyzer("++");
         l.fetchNextToken();
         Token t = l.getCurrentToken();
@@ -62,7 +64,7 @@ public class LexicalAnalyzerTest {
     }
     
     @Test
-    public void testThree() {
+    public void testThree() throws Exception {
         final LexicalAnalyzer l = new LexicalAnalyzer("(123)");
         l.fetchNextToken();
         Token t = l.getCurrentToken();
@@ -70,7 +72,7 @@ public class LexicalAnalyzerTest {
         assertEquals(0, t.getStartPosition());
         l.fetchNextToken();
         t = l.getCurrentToken();
-        assertEquals(TokenType.LITERAL, t.getType());
+        assertEquals(TokenType.INTLITERAL, t.getType());
         assertEquals(1, t.getStartPosition());
         l.fetchNextToken();
         t = l.getCurrentToken();
@@ -83,15 +85,19 @@ public class LexicalAnalyzerTest {
     }
     
     @Test
-    public void testIllegalToken() {
-        final LexicalAnalyzer l = new LexicalAnalyzer("^");
-        l.fetchNextToken();
-        Token t = l.getCurrentToken();
-        assertNull(t);
+    public void testIllegalToken() throws Exception {
+        try {
+            final LexicalAnalyzer l = new LexicalAnalyzer("^");
+            l.fetchNextToken();
+            Token t = l.getCurrentToken();
+            assertNull(t);
+        } catch (Exception ex) {
+            System.out.println("Should execute");
+        }
     }
     
     @Test
-    public void testLongestFoundToken() {
+    public void testLongestFoundToken() throws Exception {
         final LexicalAnalyzer l = new LexicalAnalyzer("++", new TokenFactory[] {
             new OperatorTokenFactory("++", TokenType.STAR),
             new OperatorTokenFactory("+", TokenType.PLUS)
