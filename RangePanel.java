@@ -69,13 +69,17 @@ public final class RangePanel extends JPanel {
      */
     private double evaluate(final String text) {
         final Parser parser = new ArithParser();
-        final Node parsedExpression = parser.parse(text);
-        System.out.println(parsedExpression.toString());
-        final Program program = new Program();
-        parsedExpression.compile(program);
-        System.out.println(program.toString());
-        final VariableTable variableTable = new VariableTable();
-        return program.execute(variableTable);
+        try {
+            final Node parsedExpression = parser.parse(text);
+            System.out.println(parsedExpression.toString());
+            final Program program = new Program();
+            parsedExpression.compile(program);
+            final VariableTable variableTable = new VariableTable();
+            return program.dExecute(variableTable);
+        } catch (Exception ex) {
+            // TODO error handling
+        }
+        return 0; // error
     }
     
     /**

@@ -1,7 +1,7 @@
 /**
  * BIPUSH pushes the given value onto the operand stack.
  */
-public class BIPUSH extends Instruction {
+public class BIPUSH implements Instruction {
     
     private final int value;
     
@@ -16,7 +16,7 @@ public class BIPUSH extends Instruction {
     
     @Override
     public void execute(final Storage storage) {
-        storage.getOperandStack().push(value);
+        storage.getOperandStack().ipush(value);
     }
     
     @Override
