@@ -6,7 +6,7 @@
  */
 public class OperandStack {
     
-    private final int[] stack;
+    private final Double[] stack;
     private int sp;
     
     /**
@@ -14,23 +14,39 @@ public class OperandStack {
      * with space for at most 10 elements!
      */
     public OperandStack() {
-        stack = new int[10];
+        stack = new Double[10];
         sp = -1;
+    }
+
+    /**
+     * Push the given value on the stack.
+     * @param value The value to ipush
+     */
+    public void ipush(final int value) {
+        stack[++sp] = (double) value; 
     }
     
     /**
      * Push the given value on the stack.
-     * @param value The value to push
+     * @param value The value to ipush
      */
-    public void push(final Number value) {
-        stack[++sp] = value.intValue();
+    public void dpush(final double value) {
+        stack[++sp] = value; 
     }
-    
+
     /**
      * Pop the top-most value off the stack.
      * @return the top-most value
      */
-    public int pop() {
+    public int ipop() {
+        return stack[sp--].intValue();
+    }
+
+    /**
+     * Pop the top-most value off the stack.
+     * @return the top-most value
+     */
+    public double dpop() {
         return stack[sp--];
     }
     

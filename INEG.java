@@ -1,17 +1,15 @@
 /**
  * INEG negates the top value from the OperandStack
- * and pushes the result back to the OperandStack.
+ * and ipushes the result back to the OperandStack.
  */
-public class INEG extends Instruction {
-    
-    
+public class INEG implements Instruction {
 
     @Override
     public void execute(final Storage storage) {
         final OperandStack stack = storage.getOperandStack();
-        stack.push(-stack.pop());
+        stack.ipush(-stack.ipop());
     }
-        
+    
     @Override
     public String toString() {
         return "INEG";

@@ -1,14 +1,14 @@
 /**
  * ISUB subtracts the top value from the second-to-top value
  * of the OperandStack,
- * and pushes the result back to the OperandStack.
+ * and ipushes the result back to the OperandStack.
  */
-public class ISUB extends Instruction {
-    
+public class ISUB implements Instruction {
+
     @Override
     public void execute(final Storage storage) {
         final OperandStack stack = storage.getOperandStack();
-        stack.push(-stack.pop() + stack.pop());
+        stack.ipush(-stack.ipop() + stack.ipop());
     }
         
     @Override

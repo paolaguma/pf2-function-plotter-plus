@@ -1,9 +1,9 @@
-public class IMUL extends Instruction {
+public class IMUL implements Instruction {
     
     @Override
     public void execute(final Storage storage) {
         final OperandStack stack = storage.getOperandStack();
-        stack.push(stack.pop() * stack.pop());
+        stack.ipush(stack.ipop() * stack.ipop());
     }
     
     @Override

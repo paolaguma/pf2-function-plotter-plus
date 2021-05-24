@@ -1,16 +1,14 @@
-public class IDIV extends Instruction {
-
+public class IDIV implements Instruction {
+    
     @Override
     public void execute(final Storage storage) {
         final OperandStack stack = storage.getOperandStack();
-        final int l = stack.pop();
-        final int r = stack.pop();
-        stack.push(r / l);
+        stack.ipush((1 / stack.ipop()) * stack.ipop());
     }
-    
+
     @Override
     public String toString() {
         return "IDIV";
     }
-
+    
 }
