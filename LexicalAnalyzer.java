@@ -33,6 +33,9 @@ public final class LexicalAnalyzer {
      */
     public LexicalAnalyzer(final String expression) {
         this(expression, new TokenFactory[] {
+            new FunctionTokenFactory("SIN"),
+            new FunctionTokenFactory("COS"),
+            new FunctionTokenFactory("SUM"),
             new IdentifierTokenFactory(),
             new LiteralTokenFactory(),
             new OperatorTokenFactory("+", TokenType.PLUS),
@@ -42,6 +45,7 @@ public final class LexicalAnalyzer {
             new OperatorTokenFactory("%", TokenType.PERCENT),
             new OperatorTokenFactory("(", TokenType.OPEN_PAREN),
             new OperatorTokenFactory(")", TokenType.CLOSED_PAREN),
+            new OperatorTokenFactory(",", TokenType.COMMA),
         });
     }
 
@@ -60,16 +64,23 @@ public final class LexicalAnalyzer {
 
     /**
      * Ask the analyzer to move to the next token in the text.
+     * @throws Exception a LexicalAnalyzer exception //TODO add a LexicalAnalyzerException
      */
-    public void fetchNextToken() {
-        token = scanToken();      
+    public void fetchNextToken() throws Exception {
+        try {
+            token = scanToken();
+        } catch (Exception ex) {
+            throw ex;
+        }
+        //System.out.println("Fetch" + token.getText());
     }
 
     /**
      * Scan the text and extract the next token.
      * @return the next token
+     * @throws Exception;
      */
-    private Token scanToken() {
+    private Token scanToken() throws Exception {
         if (position == text.length()) {
             return new Token(TokenType.END_OF_FILE, "", position);
         } else {
@@ -88,7 +99,7 @@ public final class LexicalAnalyzer {
 
             // if no match is found then return null, otherwise produce a token
             if (factoryWithLongestMatch == null) {
-                return null;
+                throw new Exception("Unrecognized character at position " + (position + 1));
             } else {
                 position += factoryWithLongestMatch.getTokenLength();
                 return factoryWithLongestMatch.getToken();

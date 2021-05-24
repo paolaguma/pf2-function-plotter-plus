@@ -29,10 +29,17 @@ public final class Function {
     public final void setExpression(final String expressionText) {
         this.expressionText = expressionText;
         final Parser parser = new ArithParser();
-        final Node parsedExpression = parser.parse(expressionText);
-        program = new Program();
-        parsedExpression.compile(program);
-        fireFunctionChanged();
+        final Node parsedExpression;
+        try {
+            parsedExpression = parser.parse(expressionText);
+            program = new Program();
+            parsedExpression.compile(program);
+            fireFunctionChanged();
+        } catch (Exception ex) {
+            //TODO handle errors.
+            // do sth with the error;
+        }
+
     }
     
     /**
@@ -52,8 +59,8 @@ public final class Function {
         final VariableTable variableTable = new VariableTable();
         //TODO: if your language supports doubles, remove this cast
         final int value = (int)x;
-        variableTable.set("x", value);
-        return program.execute(variableTable);
+        variableTable.iset("x", value);
+        return program.dExecute(variableTable);
     }
     
     //--- listener management
